@@ -1,5 +1,7 @@
 use clap::Parser;
 use std::fs;
+use std::io;
+use std::io::Read;
 
 fn read_file(path: &String) -> String {
     return fs::read_to_string(path).expect("File not found");
@@ -27,7 +29,7 @@ fn count_chars(text: &String) -> usize {
     return text.chars().count();
 }
 
-#[derive(Debug, Parser)]
+#[derive(Debug, Parser, Clone)]
 struct Args {
     #[arg(short = 'c', long)]
     bytes: bool,
@@ -44,32 +46,55 @@ struct Args {
     path: Option<String>,
 }
 
+fn cli(args: &Args, contents: String, path: Option<&String>) {
+    let count: usize;
+    if args.bytes {
+        count = count_bytes(&contents);
+    } else if args.lines {
+        count = count_new_lines(&contents);
+    } else if args.words {
+        count = count_words(&contents);
+    } else if args.chars {
+        count = count_chars(&contents);
+    } else {
+        let byte_count = count_bytes(&contents);
+        let line_count = count_new_lines(&contents);
+        let word_count = count_words(&contents);
+
+        if path.is_none() {
+            println!("{}   {}  {}", line_count, word_count, byte_count);
+        } else {
+            println!(
+                "{}   {}  {} {}",
+                line_count,
+                word_count,
+                byte_count,
+                path.unwrap()
+            );
+        }
+        return;
+    }
+
+    if path.is_none() {
+        println!("{}", count);
+    } else {
+        println!("{} {}", count, path.unwrap());
+    }
+}
+
 fn main() {
     let args = Args::parse();
 
-    if let Some(path) = args.path {
-        let contents = read_file(&path);
+    if let Some(path) = &args.path {
+        let contents = read_file(path);
 
-        if args.bytes {
-            let count = count_bytes(&contents);
-            println!("{} {}", count, path);
-        } else if args.lines {
-            let count = count_new_lines(&contents);
-            println!("{} {}", count, path);
-        } else if args.words {
-            let count = count_words(&contents);
-            println!("{} {}", count, path);
-        } else if args.chars {
-            let count = count_chars(&contents);
-            println!("{} {}", count, path);
-        } else {
-            let byte_count = count_bytes(&contents);
-            let line_count = count_new_lines(&contents);
-            let word_count = count_words(&contents);
-
-            println!("{}   {}  {} {}", line_count, word_count, byte_count, path)
-        }
+        cli(&args, contents, Some(path));
     } else {
-        println!("No path given")
+        let mut contents = String::new();
+        io::stdin()
+            .read_to_string(&mut contents)
+            .expect("Error processing std in");
+
+        cli(&args, contents, None);
     }
 }
