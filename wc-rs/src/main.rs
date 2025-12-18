@@ -23,6 +23,10 @@ fn count_words(text: &String) -> usize {
     return text.split_whitespace().count();
 }
 
+fn count_chars(text: &String) -> usize {
+    return text.chars().count();
+}
+
 #[derive(Debug, Parser)]
 struct Args {
     #[arg(short = 'c', long)]
@@ -33,6 +37,9 @@ struct Args {
 
     #[arg(short, long)]
     words: bool,
+
+    #[arg(short = 'm', long)]
+    chars: bool,
 
     path: Option<String>,
 }
@@ -55,6 +62,11 @@ fn main() {
 
         if args.words {
             let count = count_words(&contents);
+            println!("{} {}", count, path);
+        }
+
+        if args.chars {
+            let count = count_chars(&contents);
             println!("{} {}", count, path);
         }
     } else {
