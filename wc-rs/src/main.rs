@@ -53,21 +53,21 @@ fn main() {
         if args.bytes {
             let count = count_bytes(&contents);
             println!("{} {}", count, path);
-        }
-
-        if args.lines {
+        } else if args.lines {
             let count = count_new_lines(&contents);
             println!("{} {}", count, path);
-        }
-
-        if args.words {
+        } else if args.words {
             let count = count_words(&contents);
             println!("{} {}", count, path);
-        }
-
-        if args.chars {
+        } else if args.chars {
             let count = count_chars(&contents);
             println!("{} {}", count, path);
+        } else {
+            let byte_count = count_bytes(&contents);
+            let line_count = count_new_lines(&contents);
+            let word_count = count_words(&contents);
+
+            println!("{}   {}  {} {}", line_count, word_count, byte_count, path)
         }
     } else {
         println!("No path given")
