@@ -19,6 +19,10 @@ fn count_new_lines(text: &String) -> usize {
     return count;
 }
 
+fn count_words(text: &String) -> usize {
+    return text.split_whitespace().count();
+}
+
 #[derive(Debug, Parser)]
 struct Args {
     #[arg(short = 'c', long)]
@@ -26,6 +30,9 @@ struct Args {
 
     #[arg(short, long)]
     lines: bool,
+
+    #[arg(short, long)]
+    words: bool,
 
     path: Option<String>,
 }
@@ -40,8 +47,14 @@ fn main() {
             let count = count_bytes(&contents);
             println!("{} {}", count, path);
         }
+
         if args.lines {
             let count = count_new_lines(&contents);
+            println!("{} {}", count, path);
+        }
+
+        if args.words {
+            let count = count_words(&contents);
             println!("{} {}", count, path);
         }
     } else {
