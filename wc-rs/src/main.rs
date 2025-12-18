@@ -9,6 +9,16 @@ fn count_bytes(text: &String) -> usize {
     return text.len();
 }
 
+fn count_new_lines(text: &String) -> usize {
+    let mut count: usize = 0;
+    for char in text.chars() {
+        if char == '\n' {
+            count += 1;
+        }
+    }
+    return count;
+}
+
 #[derive(Debug, Parser)]
 struct Args {
     #[arg(short = 'c', long)]
@@ -20,23 +30,21 @@ struct Args {
     path: Option<String>,
 }
 
-fn cli(args: Args) {
-    if args.bytes {
-        if let Some(path) = args.path {
-            let contents = read_file(&path);
-            let count = count_bytes(&contents);
-            println!("{} {}", count, path);
-        }
-    }
-    if args.lines {}
-}
-
 fn main() {
     let args = Args::parse();
 
-    if args.path == None {
-        println!("No path given");
+    if let Some(path) = args.path {
+        let contents = read_file(&path);
+
+        if args.bytes {
+            let count = count_bytes(&contents);
+            println!("{} {}", count, path);
+        }
+        if args.lines {
+            let count = count_new_lines(&contents);
+            println!("{} {}", count, path);
+        }
     } else {
-        cli(args);
+        println!("No path given")
     }
 }
