@@ -1,0 +1,4 @@
+*.txt
+debug
+target
+**/*.rs.bk
